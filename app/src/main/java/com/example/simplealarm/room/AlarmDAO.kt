@@ -1,7 +1,6 @@
 package com.example.simplealarm.room
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
@@ -12,8 +11,8 @@ interface AlarmDAO {
     @Insert(onConflict = REPLACE)
     fun addAlarm(alarm : Alarm)
 
-    @Delete
-    fun deleteAlarm(alarm : Alarm)
+    @Query("DELETE FROM Alarm WHERE alarmID = :id")
+    fun deleteAlarm(id : Int)
 
     @Query("SELECT * FROM Alarm")
     fun getAlarmList() : Flow<List<Alarm>>

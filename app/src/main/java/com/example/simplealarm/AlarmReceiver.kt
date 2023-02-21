@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.example.simplealarm.room.AppDataBase
 
 class AlarmReceiver : BroadcastReceiver() {
 
@@ -24,6 +25,10 @@ class AlarmReceiver : BroadcastReceiver() {
         Log.d("WORK", "WORKING")
         createNotificationChannel(context)
         startNotify(context)
+        Log.d("D", "${intent!!.getIntExtra("id", 0)}")
+        Thread{
+            AppDataBase.getInstance(context)!!.AlarmDAO().deleteAlarm(intent.getIntExtra("id", 0))
+        }.start()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

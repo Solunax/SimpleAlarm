@@ -11,7 +11,7 @@ class Repository(private val db : AppDataBase?) {
         db!!.AlarmDAO().addAlarm(alarm)
     }
 
-    fun deleteAlarm(alarm: Alarm){
-        db!!.AlarmDAO().deleteAlarm(alarm)
+    fun deleteAlarm(id : Int){
+        db!!.AlarmDAO().deleteAlarm(id)
     }
 }

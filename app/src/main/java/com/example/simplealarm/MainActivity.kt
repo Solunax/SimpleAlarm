@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity(), TimePicekrInterface {
                 }else if((pendingIntent != null) && !alarm.isOn)
                     pendingIntent.cancel()
 
-                if(it.first().isOn){
+                if(alarm.isOn){
                     Log.d("ON", "ON")
                     controlAlarm.text = "알람 끄기"
                 }
@@ -85,6 +85,7 @@ class MainActivity : AppCompatActivity(), TimePicekrInterface {
                     calendar.apply {
                         set(Calendar.HOUR_OF_DAY, alarm.hour)
                         set(Calendar.MINUTE, alarm.minute)
+                        set(Calendar.SECOND, 0)
                     }
 
                     if(now.after(calendar.time)){
@@ -93,12 +94,16 @@ class MainActivity : AppCompatActivity(), TimePicekrInterface {
                     }
 
                     val intent = Intent(this, AlarmReceiver::class.java)
+                    intent.putExtra("id", 0)
+
                     val pendingIntent = PendingIntent.getBroadcast(
                         this,
                         alarmREQCode,
                         intent,
                         PendingIntent.FLAG_UPDATE_CURRENT
                     )
+
+
 
                     alarmManager.setExactAndAllowWhileIdle(
                         AlarmManager.RTC_WAKEUP,

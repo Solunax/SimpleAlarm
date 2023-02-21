@@ -3,7 +3,6 @@ package com.example.simplealarm
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.simplealarm.room.Alarm
@@ -27,9 +26,9 @@ class ViewModel(application: Application) : AndroidViewModel(application){
         }
     }
 
-    fun deleteAlarm(alarm: Alarm){
+    fun deleteAlarm(id: Int){
         viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteAlarm(alarm)
+            repository.deleteAlarm(id)
         }
     }
 }
