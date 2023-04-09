@@ -10,26 +10,25 @@ import android.util.*
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.simplealarm.databinding.ActivityMainBinding
 import com.example.simplealarm.dialog.TimePicekrInterface
 import com.example.simplealarm.dialog.TimeSetDialog
 import com.example.simplealarm.room.Alarm
 import java.util.*
 
-class MainActivity : AppCompatActivity(), TimePicekrInterface {
+class MainActivity : AppCompatActivity(), TimePicekrInterface, RecyclerClickCallback {
     private val viewModel : ViewModel by viewModels()
     private lateinit var binding : ActivityMainBinding
     private lateinit var alarm : Alarm
     private lateinit var calendar : Calendar
     private lateinit var alarmManager: AlarmManager
-    private lateinit var controlAlarm : Button
-    private val alarmREQCode = 100
+    private val recyclerAdapter = AlarmRecyclerAdapter(this)
+    private var alarmData : List<Alarm> = emptyList()
 
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -38,36 +37,38 @@ class MainActivity : AppCompatActivity(), TimePicekrInterface {
         calendar = Calendar.getInstance()
         alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        val time = binding.time
-        controlAlarm = binding.setAlarm
         val setTime = binding.timeSet
+        val recyclerView = binding.alarmRecycler
+        recyclerAdapter.setHasStableIds(true)
+        recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerView.adapter = recyclerAdapter
 
         viewModel.alarmData.observe(this){
+            alarmData = it
+            recyclerAdapter.setData(it)
             if(it.isNotEmpty()){
-                alarm = it.first()
-                time.text = "%02d:%02d".format(alarm.hour, alarm.minute)
+                it.forEach {v ->
+                    alarm = v
 
-                val pendingIntent = PendingIntent.getBroadcast(
-                    this,
-                    alarmREQCode,
-                    Intent(this, AlarmReceiver::class.java),
-                    PendingIntent.FLAG_NO_CREATE
-                )
+                    val pendingIntent = PendingIntent.getBroadcast(
+                        this,
+                        alarm.alarmID,
+                        Intent(this, AlarmReceiver::class.java),
+                        PendingIntent.FLAG_NO_CREATE
+                    )
 
-                if((pendingIntent == null) && alarm.isOn){
-                    alarm.isOn = false
-                    viewModel.addAlarm(alarm)
-                }else if((pendingIntent != null) && !alarm.isOn)
-                    pendingIntent.cancel()
+                    if((pendingIntent == null) && alarm.isOn){
+                        alarm.isOn = false
+                        viewModel.addAlarm(alarm)
+                    }else if((pendingIntent != null) && !alarm.isOn)
+                        pendingIntent.cancel()
 
-                if(alarm.isOn){
-                    Log.d("ON", "ON")
-                    controlAlarm.text = "알람 끄기"
+                    if(alarm.isOn)
+                        Log.d("ON", "ON")
+                    else
+                        Log.d("OFF", "OFF")
                 }
-                else{
-                    Log.d("OFF", "OFF")
-                    controlAlarm.text = "알람 켜기"
-                }
+
             }
         }
 
@@ -76,63 +77,12 @@ class MainActivity : AppCompatActivity(), TimePicekrInterface {
             timePickerDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             timePickerDialog.show()
         }
-
-        controlAlarm.setOnClickListener {
-            if(::alarm.isInitialized){
-                if(!alarm.isOn){
-                    val now = Calendar.getInstance().time
-
-                    calendar.apply {
-                        set(Calendar.HOUR_OF_DAY, alarm.hour)
-                        set(Calendar.MINUTE, alarm.minute)
-                        set(Calendar.SECOND, 0)
-                    }
-
-                    if(now.after(calendar.time)){
-                        Toast.makeText(this, "다음 날로 알람을 설정 합니다.", Toast.LENGTH_SHORT).show()
-                        calendar.add(Calendar.DATE, 1)
-                    }
-
-                    val intent = Intent(this, AlarmReceiver::class.java)
-                    intent.putExtra("id", 0)
-
-                    val pendingIntent = PendingIntent.getBroadcast(
-                        this,
-                        alarmREQCode,
-                        intent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                    )
-
-
-
-                    alarmManager.setExactAndAllowWhileIdle(
-                        AlarmManager.RTC_WAKEUP,
-                        calendar.timeInMillis,
-                        pendingIntent
-                    )
-
-                    alarm.isOn = true
-                    viewModel.addAlarm(alarm)
-
-                    Log.d("SET", "알람 설정됨")
-                    controlAlarm.text = "알람 끄기"
-                }else{
-                    cancelAlarm()
-
-                    alarm.isOn = false
-                    viewModel.addAlarm(alarm)
-
-                    Log.d("SET", "알람 중지됨")
-                    controlAlarm.text = "알람 켜기"
-                }
-            }
-        }
     }
 
-    private fun cancelAlarm(){
+    private fun cancelAlarm(position: Int){
         val pendingIntent = PendingIntent.getBroadcast(
             this,
-            alarmREQCode,
+            position,
             Intent(this, AlarmReceiver::class.java),
             PendingIntent.FLAG_NO_CREATE
         )
@@ -143,5 +93,63 @@ class MainActivity : AppCompatActivity(), TimePicekrInterface {
     override fun onPositive(hour: Int, minute: Int) {
         val alarm = Alarm(0, hour, minute, false)
         viewModel.addAlarm(alarm)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onClick(position: Int, state: Boolean){
+        if(::alarm.isInitialized){
+            alarmData.forEach {
+                if(it.alarmID == position)
+                    alarm = it
+            }
+
+            if(state){
+                val now = Calendar.getInstance().time
+
+                calendar.apply {
+                    set(Calendar.HOUR_OF_DAY, alarm.hour)
+                    set(Calendar.MINUTE, alarm.minute)
+                    set(Calendar.SECOND, 0)
+                }
+
+                if(now.after(calendar.time)){
+                    Toast.makeText(this, "다음 날로 알람을 설정 합니다.", Toast.LENGTH_SHORT).show()
+                    calendar.add(Calendar.DATE, 1)
+                }
+
+                val intent = Intent(this, AlarmReceiver::class.java)
+                intent.putExtra("id", position)
+
+                val pendingIntent = PendingIntent.getBroadcast(
+                    this,
+                    position,
+                    intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.timeInMillis,
+                    pendingIntent
+                )
+
+                alarm.isOn = true
+                viewModel.addAlarm(alarm)
+
+                Log.d("SET", "알람 설정됨")
+            }else{
+                cancelAlarm(position)
+
+                alarm.isOn = false
+                viewModel.addAlarm(alarm)
+
+                Log.d("SET", "알람 중지됨")
+            }
+        }
+    }
+
+    override fun onClickDelete(position: Int) {
+        cancelAlarm(position)
+        viewModel.deleteAlarm(position)
     }
 }
