@@ -11,9 +11,13 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.example.simplealarm.room.AppDataBase
+import com.example.simplealarm.room.AlarmDAO
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class AlarmReceiver : BroadcastReceiver() {
+    @Inject lateinit var alarmDAO: AlarmDAO
 
     companion object{
         const val channelID = "SimpleAlarm"
@@ -26,8 +30,9 @@ class AlarmReceiver : BroadcastReceiver() {
         createNotificationChannel(context)
         startNotify(context)
         Log.d("D", "${intent!!.getIntExtra("id", 0)}")
+
         Thread{
-            AppDataBase.getInstance(context)!!.AlarmDAO().deleteAlarm(intent.getIntExtra("id", 0))
+            alarmDAO.deleteAlarm(intent.getIntExtra("id", 0))
         }.start()
     }
 

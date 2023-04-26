@@ -1,17 +1,23 @@
 package com.example.simplealarm
 
 import com.example.simplealarm.room.Alarm
-import com.example.simplealarm.room.AppDataBase
+import com.example.simplealarm.room.AlarmDAO
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class Repository(private val db : AppDataBase?) {
-    val alarmData : Flow<List<Alarm>> = db!!.AlarmDAO().getAlarmList()
+@Module
+@InstallIn(SingletonComponent::class)
+class Repository @Inject constructor(private val db : AlarmDAO) {
+    val alarmData : Flow<List<Alarm>> = db.getAlarmList()
 
     fun addAlarm(alarm: Alarm){
-        db!!.AlarmDAO().addAlarm(alarm)
+        db.addAlarm(alarm)
     }
 
     fun deleteAlarm(id : Int){
-        db!!.AlarmDAO().deleteAlarm(id)
+        db.deleteAlarm(id)
     }
 }

@@ -18,8 +18,10 @@ import com.example.simplealarm.databinding.ActivityMainBinding
 import com.example.simplealarm.dialog.TimePicekrInterface
 import com.example.simplealarm.dialog.TimeSetDialog
 import com.example.simplealarm.room.Alarm
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), TimePicekrInterface, RecyclerClickCallback {
     private val viewModel : ViewModel by viewModels()
     private lateinit var binding : ActivityMainBinding
