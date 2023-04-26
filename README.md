@@ -16,11 +16,13 @@
         - ex) 휴대폰 충전, 화면 켜짐/꺼짐 등등
 
 ## 사용 라이브러리
-- room, activity, lifecycle
+- room, activity, lifecycle, hilt
     - room 
         - 알람 데이터 저장을 위해서 사용함
     - activity, lifecycle
         - ViewModel을 구성하기 위해서 사용함
+    - hilt
+        - 의존성 주입(DI)를 위해서 사용함
 
 ## 구동 사진
 - 최초 실행화면
@@ -41,5 +43,6 @@
 
 
 ## 추가 변경 사항
-- 다수의 알람을 동시에 등록할 수 있게 수정함, 등록된 알람 목록은 Recycler View를 통해 표시(내부 DB에 저장된 알람 )
-- Recycler View에 알람 데이터가 시간순으로 정렬되어 표시되게 
+- 다수의 알람을 동시에 등록할 수 있게 수정함, 등록된 알람 목록은 Recycler View를 통해 표시(내부 DB에 저장된 알람)
+- Recycler View에 알람 데이터가 시간순으로 정렬되어 표시되게 함
+- Hilt 라이브러리 적용
