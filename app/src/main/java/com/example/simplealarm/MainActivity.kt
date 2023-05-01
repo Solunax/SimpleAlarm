@@ -46,12 +46,7 @@ class MainActivity : AppCompatActivity(), TimePicekrInterface, RecyclerClickCall
         recyclerView.adapter = recyclerAdapter
 
         viewModel.alarmData.observe(this){
-            alarmData = it.sortedWith{ o1, o2 ->
-                if(o1.hour == o2.hour)
-                    o1.minute.compareTo(o2.minute)
-                else
-                    o1.hour.compareTo(o2.hour)
-            }
+            alarmData = it
 
             recyclerAdapter.setData(alarmData)
             if(alarmData.isNotEmpty()){

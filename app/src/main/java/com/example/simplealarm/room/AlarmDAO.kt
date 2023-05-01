@@ -14,6 +14,6 @@ interface AlarmDAO {
     @Query("DELETE FROM Alarm WHERE alarmID = :id")
     fun deleteAlarm(id : Int)
 
-    @Query("SELECT * FROM Alarm")
+    @Query("SELECT * FROM Alarm ORDER BY hour, minute")
     fun getAlarmList() : Flow<List<Alarm>>
 }

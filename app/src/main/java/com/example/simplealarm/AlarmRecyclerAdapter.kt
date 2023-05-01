@@ -1,17 +1,10 @@
 package com.example.simplealarm
 
 import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simplealarm.databinding.AlarmRecyclerItemBinding
-import com.example.simplealarm.dialog.TimePicekrInterface
 import com.example.simplealarm.room.Alarm
 import java.util.*
 
@@ -22,9 +15,13 @@ class AlarmRecyclerAdapter(recyclerInterface : RecyclerClickCallback) : Recycler
     class AlarmViewHolder(private val binding : AlarmRecyclerItemBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(alarm : Alarm, mInterface : RecyclerClickCallback){
             binding.alarm = alarm
+            // 데이터 추가, 삭제시 활성화된 스위치 버튼이 오작동하는 것을 방지하기 위해 리스너 초기화
+            // 리스너를 초기화하고, alarm 데이터의 isOn(활성화 상태)에 맞게 스위치를 변경하도록 수정함
+            binding.alarmSwitch.setOnCheckedChangeListener(null)
+            binding.alarmSwitch.isChecked = alarm.isOn
 
             // 알람 스위치
-            binding.alarmSwitch.setOnCheckedChangeListener { compoundButton, check ->
+            binding.alarmSwitch.setOnCheckedChangeListener { _, check ->
                 mInterface.onClick(alarm.alarmID, check)
             }
 
