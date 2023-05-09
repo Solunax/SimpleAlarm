@@ -23,7 +23,7 @@ import java.util.*
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), TimePicekrInterface, RecyclerClickCallback {
-    private val viewModel : ViewModel by viewModels()
+    private val viewModel : AlarmViewModel by viewModels()
     private lateinit var binding : ActivityMainBinding
     private lateinit var alarm : Alarm
     private lateinit var calendar : Calendar
