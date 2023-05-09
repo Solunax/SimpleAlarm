@@ -48,3 +48,6 @@
 - Hilt 라이브러리 적용
 - 알람 데이터 정렬을 data observe 에서 하는게 아닌 DAO 에서 ORDER BY로 정렬하게 수정
 - 알람 활성화 후 데이터 추가/삭제시 Recycler View 의 스위치 상태가 이상한 오류 수정 
+- Hilt 적용시 불필요한 코드 제거
+- Repository가 Interface를 구현하도록 수정
+- View Model이 Interface 타입을 주입받도록 수정(Interface를 주입할 때 Module을 만들어서 인터페이스와 구현 클래스를 연결해야 함(@Module, @Binds, 추상클래스))
