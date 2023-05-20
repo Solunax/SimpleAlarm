@@ -16,4 +16,7 @@ interface AlarmDAO {
 
     @Query("SELECT * FROM Alarm ORDER BY hour, minute")
     fun getAlarmList() : Flow<List<Alarm>>
+
+    @Query("UPDATE Alarm SET isOn = :state WHERE alarmID = :id")
+    fun editAlarmState(id: Int, state : Boolean)
 }

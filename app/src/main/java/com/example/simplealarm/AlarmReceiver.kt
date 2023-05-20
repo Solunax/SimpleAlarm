@@ -29,10 +29,9 @@ class AlarmReceiver : BroadcastReceiver() {
         Log.d("WORK", "WORKING")
         createNotificationChannel(context)
         startNotify(context)
-        Log.d("D", "${intent!!.getIntExtra("id", 0)}")
 
         Thread{
-            alarmDAO.deleteAlarm(intent.getIntExtra("id", 0))
+            alarmDAO.editAlarmState(intent!!.getIntExtra("id", 0), false)
         }.start()
     }
 

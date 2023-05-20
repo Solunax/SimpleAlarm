@@ -15,4 +15,8 @@ class LocalRepository @Inject constructor(private val db: AlarmDAO) : Repository
     override fun deleteAlarm(id: Int) {
         db.deleteAlarm(id)
     }
+
+    override fun editAlarmState(id: Int, state : Boolean) {
+        db.editAlarmState(id, state)
+    }
 }

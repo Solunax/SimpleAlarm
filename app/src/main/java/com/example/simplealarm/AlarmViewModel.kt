@@ -26,4 +26,10 @@ class AlarmViewModel @Inject constructor(private val repository: RepositoryInter
             repository.deleteAlarm(id)
         }
     }
+
+    fun editAlarmState(id : Int, state : Boolean){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.editAlarmState(id, state)
+        }
+    }
 }

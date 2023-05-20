@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity(), TimePicekrInterface, RecyclerClickCall
 
                     if((pendingIntent == null) && alarm.isOn){
                         alarm.isOn = false
-                        viewModel.addAlarm(alarm)
+                        viewModel.editAlarmState(alarm.alarmID, alarm.isOn)
                     }else if((pendingIntent != null) && !alarm.isOn)
                         pendingIntent.cancel()
 
@@ -137,17 +137,15 @@ class MainActivity : AppCompatActivity(), TimePicekrInterface, RecyclerClickCall
                 )
 
                 alarm.isOn = true
-                viewModel.addAlarm(alarm)
-
                 Log.d("SET", "알람 설정됨")
             }else{
                 cancelAlarm(position)
 
                 alarm.isOn = false
-                viewModel.addAlarm(alarm)
-
                 Log.d("SET", "알람 중지됨")
             }
+
+            viewModel.editAlarmState(alarm.alarmID, alarm.isOn)
         }
     }
 

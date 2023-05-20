@@ -7,4 +7,5 @@ interface RepositoryInterface {
     var alarmData : Flow<List<Alarm>>
     fun addAlarm(alarm: Alarm)
     fun deleteAlarm(id: Int)
+    fun editAlarmState(id : Int, state : Boolean)
 }
