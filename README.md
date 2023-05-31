@@ -51,3 +51,4 @@
 - Hilt 적용시 불필요한 코드 제거
 - Repository가 Interface를 구현하도록 수정
 - View Model이 Interface 타입을 주입받도록 수정(Interface를 주입할 때 Module을 만들어서 인터페이스와 구현 클래스를 연결해야 함(@Module, @Binds, 추상클래스))
+- 알람이 울리면 삭제되는게 아닌 비활성화 되도록 변경, 알람 활성/비활성화시 로직 수정
