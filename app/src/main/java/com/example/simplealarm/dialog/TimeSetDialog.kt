@@ -6,10 +6,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Toast
 import com.example.simplealarm.databinding.TimeSetDialogBinding
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 class TimeSetDialog(context : Context, mInterface : TimePicekrInterface) : Dialog(context) {
     private var customInterface : TimePicekrInterface = mInterface
     private lateinit var binding : TimeSetDialogBinding
+    var hour : Int? = null
+    var minute : Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,9 +24,7 @@ class TimeSetDialog(context : Context, mInterface : TimePicekrInterface) : Dialo
         val timePicker = binding.timePicker
         val ok = binding.timeSet
         val no = binding.cancel
-
-        var hour : Int? = null
-        var minute : Int? = null
+        getTime()
 
         timePicker.setOnTimeChangedListener { _, h, m ->
             hour = h
@@ -40,5 +42,14 @@ class TimeSetDialog(context : Context, mInterface : TimePicekrInterface) : Dialo
         no.setOnClickListener {
             dismiss()
         }
+    }
+
+    fun getTime(){
+        val format = SimpleDateFormat("HH:mm")
+        val now = System.currentTimeMillis()
+        val time = format.format(now).split(":")
+
+        hour = time[0].toInt()
+        minute = time[1].toInt()
     }
 }

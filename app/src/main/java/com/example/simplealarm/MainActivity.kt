@@ -99,13 +99,18 @@ class MainActivity : AppCompatActivity(), TimePicekrInterface, RecyclerClickCall
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
+    // Recycler View 에서 클릭 이벤트 발생시(CheckBox)
     override fun onClick(position: Int, state: Boolean){
         if(::alarm.isInitialized){
+            // 알람 데이터 중 현재 선택된 알람의 인스턴스를 가져옴
             alarmData.forEach {
                 if(it.alarmID == position)
                     alarm = it
             }
 
+            // Check Box 의 상태에 따라 다른 동작 실행
+            // Check Box 가 활성 -> 새로운 알람을 Alarm Manager 에 설정
+            // Check Box 가 비활성 -> 등록된 알람을 Alarm Manager 에서 제거
             if(state){
                 val now = Calendar.getInstance().time
 
