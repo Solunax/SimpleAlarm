@@ -26,10 +26,10 @@ class AlarmReceiver : BroadcastReceiver() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context : Context, intent : Intent?) {
-        Log.d("WORK", "WORKING")
         createNotificationChannel(context)
         startNotify(context)
 
+        // 알람 발생 시 내부 DB에 저장된 알람 활성 상태를 비활성화 시킴
         Thread{
             alarmDAO.editAlarmState(intent!!.getIntExtra("id", 0), false)
         }.start()
@@ -39,7 +39,7 @@ class AlarmReceiver : BroadcastReceiver() {
     private fun createNotificationChannel(context: Context){
         val notificationChannel = NotificationChannel(
             channelID,
-            "알림",
+            "알람",
             NotificationManager.IMPORTANCE_HIGH
         )
 

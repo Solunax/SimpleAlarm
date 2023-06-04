@@ -19,7 +19,7 @@ object DataBaseModule {
     }
 
     @Provides
-    fun provideAlarmDAI(appDataBase: AppDataBase): AlarmDAO {
+    fun provideAlarmDAO(appDataBase: AppDataBase): AlarmDAO {
         return appDataBase.AlarmDAO()
     }
 }

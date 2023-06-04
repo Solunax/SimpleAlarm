@@ -15,14 +15,14 @@ import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.simplealarm.databinding.ActivityMainBinding
-import com.example.simplealarm.dialog.TimePicekrInterface
+import com.example.simplealarm.dialog.TimePickerInterface
 import com.example.simplealarm.dialog.TimeSetDialog
 import com.example.simplealarm.room.Alarm
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), TimePicekrInterface, RecyclerClickCallback {
+class MainActivity : AppCompatActivity(), TimePickerInterface, RecyclerClickCallback {
     private val viewModel : AlarmViewModel by viewModels()
     private lateinit var binding : ActivityMainBinding
     private lateinit var alarm : Alarm
@@ -60,12 +60,15 @@ class MainActivity : AppCompatActivity(), TimePicekrInterface, RecyclerClickCall
                         PendingIntent.FLAG_NO_CREATE
                     )
 
-                    if((pendingIntent == null) && alarm.isOn){
+                    // pending intent 가 존재하지 않는데, 알람이 활성화 되어있으면 내부 DB 알람 상태를 변경
+                    // pending intent 가 존재하지만 알람이 비활성화 되어있으면 pending intent를 취소함
+                   if((pendingIntent == null) && alarm.isOn){
                         alarm.isOn = false
                         viewModel.editAlarmState(alarm.alarmID, alarm.isOn)
                     }else if((pendingIntent != null) && !alarm.isOn)
                         pendingIntent.cancel()
 
+                    // 상태 확인용 LOG
                     if(alarm.isOn)
                         Log.d("ON", "ON")
                     else
@@ -82,6 +85,7 @@ class MainActivity : AppCompatActivity(), TimePicekrInterface, RecyclerClickCall
         }
     }
 
+    // 알람 취소 메소드
     private fun cancelAlarm(position: Int){
         val pendingIntent = PendingIntent.getBroadcast(
             this,
@@ -93,11 +97,13 @@ class MainActivity : AppCompatActivity(), TimePicekrInterface, RecyclerClickCall
         pendingIntent?.cancel()
     }
 
+    // Custom Dialog 의 Interface 구현 메소드
     override fun onPositive(hour: Int, minute: Int) {
         val alarm = Alarm(0, hour, minute, false)
         viewModel.addAlarm(alarm)
     }
 
+    // RecyclerView 에서 발생한 이벤트 처리를 위한 Interface 구현 메소드
     @RequiresApi(Build.VERSION_CODES.M)
     // Recycler View 에서 클릭 이벤트 발생시(CheckBox)
     override fun onClick(position: Int, state: Boolean){
@@ -154,6 +160,7 @@ class MainActivity : AppCompatActivity(), TimePicekrInterface, RecyclerClickCall
         }
     }
 
+    // RecyclerView 에서 발생한 이벤트 처리를 위한 Interface 구현 메소드
     override fun onClickDelete(position: Int) {
         cancelAlarm(position)
         viewModel.deleteAlarm(position)

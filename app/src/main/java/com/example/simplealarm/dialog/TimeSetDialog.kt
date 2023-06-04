@@ -9,8 +9,8 @@ import com.example.simplealarm.databinding.TimeSetDialogBinding
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
-class TimeSetDialog(context : Context, mInterface : TimePicekrInterface) : Dialog(context) {
-    private var customInterface : TimePicekrInterface = mInterface
+class TimeSetDialog(context : Context, mInterface : TimePickerInterface) : Dialog(context) {
+    private var customInterface : TimePickerInterface = mInterface
     private lateinit var binding : TimeSetDialogBinding
     var hour : Int? = null
     var minute : Int? = null
@@ -24,7 +24,6 @@ class TimeSetDialog(context : Context, mInterface : TimePicekrInterface) : Dialo
         val timePicker = binding.timePicker
         val ok = binding.timeSet
         val no = binding.cancel
-        getTime()
 
         timePicker.setOnTimeChangedListener { _, h, m ->
             hour = h
@@ -32,11 +31,11 @@ class TimeSetDialog(context : Context, mInterface : TimePicekrInterface) : Dialo
         }
 
         ok.setOnClickListener {
-            if(hour != null && minute != null){
-                customInterface.onPositive(hour!!, minute!!)
-                dismiss()
-            }else
-                Toast.makeText(context, "시간을 설정하세요.", Toast.LENGTH_SHORT).show()
+            if(hour == null && minute == null)
+                getTime()
+
+            customInterface.onPositive(hour!!, minute!!)
+            dismiss()
         }
 
         no.setOnClickListener {
@@ -44,7 +43,9 @@ class TimeSetDialog(context : Context, mInterface : TimePicekrInterface) : Dialo
         }
     }
 
-    fun getTime(){
+    // 사용자가 시간을 선택하지 않을시 현재 시간을 기준으로 알람을 설정하기 위한 메소드
+    // 현재 시간을 받아와 시, 분을 설정
+    private fun getTime(){
         val format = SimpleDateFormat("HH:mm")
         val now = System.currentTimeMillis()
         val time = format.format(now).split(":")
