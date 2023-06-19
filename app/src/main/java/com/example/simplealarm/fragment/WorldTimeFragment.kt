@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -73,10 +72,6 @@ class WorldTimeFragment : Fragment(), CountryAddInterface, WorldTimeRecyclerClic
         super.onAttach(context)
         sharedPreferences = requireActivity().getSharedPreferences("country", MODE_PRIVATE)
         loadSharedPreference()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     override fun onPositive(index: Int) {
