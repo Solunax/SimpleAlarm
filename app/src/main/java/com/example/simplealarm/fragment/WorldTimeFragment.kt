@@ -32,6 +32,7 @@ class WorldTimeFragment : Fragment(), CountryAddInterface, WorldTimeRecyclerClic
     private val recyclerAdapter = WorldTimeRecyclerAdapter(this)
     private var countryData = ArrayList<CountryTime>()
     private lateinit var country: Array<String>
+    private lateinit var timeZoneData : Array<String>
     private val df = SimpleDateFormat("ss")
     private lateinit var sharedPreferences : SharedPreferences
 
@@ -42,7 +43,8 @@ class WorldTimeFragment : Fragment(), CountryAddInterface, WorldTimeRecyclerClic
     ): View {
         binding = WorldTimeFragmentBinding.inflate(inflater, container, false)
 
-        country = resources.getStringArray(R.array.data)
+        country = resources.getStringArray(R.array.country)
+        timeZoneData = resources.getStringArray(R.array.timezone)
 
         val recyclerView = binding!!.worldTimeRecycler
         recyclerAdapter.setHasStableIds(true)
@@ -75,12 +77,7 @@ class WorldTimeFragment : Fragment(), CountryAddInterface, WorldTimeRecyclerClic
     }
 
     override fun onPositive(index: Int) {
-        val timezone = when (index) {
-            0 -> "Asia/Seoul"
-            1 -> "US/Eastern"
-            2 -> "Europe/London"
-            else -> ""
-        }
+        val timezone = timeZoneData[index]
 
         var check = true
         for(data in countryData){

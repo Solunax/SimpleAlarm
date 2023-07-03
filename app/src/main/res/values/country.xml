@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="data">
+    <string-array name="country">
         <item>한국</item>
+        <item>방콕</item>
         <item>미국(동부)</item>
         <item>영국</item>
+        <item>러시아(모스크바)</item>
+        <item>독일</item>
+    </string-array>
+
+    <string-array name="timezone">
+        <item>Asia/Seoul</item>
+        <item>Asia/Bangkok</item>
+        <item>US/Eastern</item>
+        <item>Europe/London</item>
+        <item>Europe/Moscow</item>
+        <item>Europe/Berlin</item>
     </string-array>
 </resources>

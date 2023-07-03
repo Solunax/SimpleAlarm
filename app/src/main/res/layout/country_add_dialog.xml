@@ -20,7 +20,7 @@
             android:id="@+id/list_view"
             android:layout_width="320dp"
             android:layout_height="wrap_content"
-            android:entries="@array/data"/>
+            android:entries="@array/country"/>
 
     </LinearLayout>
 
