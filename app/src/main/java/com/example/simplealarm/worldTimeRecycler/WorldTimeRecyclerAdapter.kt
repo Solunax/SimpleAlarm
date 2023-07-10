@@ -14,6 +14,8 @@ class WorldTimeRecyclerAdapter(recyclerInterface : WorldTimeRecyclerClickCallbac
 
     class WorldTimeViewHolder(private val binding : WorldTimeRecyclerItemBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(data : CountryTime, mInterface : WorldTimeRecyclerClickCallback){
+            // 세계시간을 지역명, 연월일 시분초 형식으로 리사이클러 뷰의 아이템에 표시함
+            // 매개변수로 받아온 CountryTime 클래스의 timeZone 의 정보를 바탕으로 타임존을 설정함
             val df = SimpleDateFormat("yyyy/MM/dd HH:mm")
             val timeZone = TimeZone.getTimeZone(data.timeZone)
             df.timeZone = timeZone

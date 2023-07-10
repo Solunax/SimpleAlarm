@@ -16,7 +16,7 @@ class CountryAddDialog (context : Context, mInterface : CountryAddInterface) : D
         setContentView(binding.root)
 
         val listview = binding.listView
-        listview.setOnItemClickListener { adapterView, view, i, l ->
+        listview.setOnItemClickListener { _, _, i, _ ->
             customInterface.onPositive(i)
             dismiss()
         }
