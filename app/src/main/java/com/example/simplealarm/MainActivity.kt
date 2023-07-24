@@ -8,7 +8,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private val tabName = listOf("알람", "세계 시간")
+    private val tabName = listOf("알람", "세계 시간", "스톱워치")
     private lateinit var binding : ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
             when(position){
                 0 -> tab.text = tabName[0]
                 1 -> tab.text = tabName[1]
+                2 -> tab.text = tabName[2]
             }
         }.attach()
     }
