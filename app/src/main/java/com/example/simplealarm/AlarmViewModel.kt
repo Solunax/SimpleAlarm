@@ -1,5 +1,9 @@
 package com.example.simplealarm
 
+import android.app.Activity
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -30,6 +34,24 @@ class AlarmViewModel @Inject constructor(private val repository: RepositoryInter
     fun editAlarmState(id : Int, state : Boolean){
         viewModelScope.launch(Dispatchers.IO) {
             repository.editAlarmState(id, state)
+        }
+    }
+
+    fun validateCheck(context : Context, activity: Activity){
+        _alarmData.value?.forEach { v ->
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                v.alarmID,
+                Intent(activity, AlarmReceiver::class.java),
+                PendingIntent.FLAG_NO_CREATE
+            )
+
+            // pending intent 가 존재하지 않는데, 알람이 활성화 되어있으면 내부 DB 알람 상태를 변경
+            // pending intent 가 존재하지만 알람이 비활성화 되어있으면 pending intent를 취소함
+            if((pendingIntent == null) && v.isOn){
+                this.editAlarmState(v.alarmID, false)
+            }else if((pendingIntent != null) && !v.isOn)
+                pendingIntent.cancel()
         }
     }
 }

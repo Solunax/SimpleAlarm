@@ -55,34 +55,8 @@ class AlarmFragment : Fragment(), TimePickerInterface, AlarmRecyclerClickCallbac
 
         viewModel.alarmData.observe(viewLifecycleOwner){
             alarmData = it
-
             recyclerAdapter.setData(alarmData)
-            if(alarmData.isNotEmpty()){
-                it.forEach {v ->
-                    alarm = v
-
-                    val pendingIntent = PendingIntent.getBroadcast(
-                        context,
-                        alarm.alarmID,
-                        Intent(activity, AlarmReceiver::class.java),
-                        PendingIntent.FLAG_NO_CREATE
-                    )
-
-                    // pending intent 가 존재하지 않는데, 알람이 활성화 되어있으면 내부 DB 알람 상태를 변경
-                    // pending intent 가 존재하지만 알람이 비활성화 되어있으면 pending intent를 취소함
-                    if((pendingIntent == null) && alarm.isOn){
-                        alarm.isOn = false
-                        viewModel.editAlarmState(alarm.alarmID, alarm.isOn)
-                    }else if((pendingIntent != null) && !alarm.isOn)
-                        pendingIntent.cancel()
-
-                    // 상태 확인용 LOG
-                    if(alarm.isOn)
-                        Log.d("ON", "ON")
-                    else
-                        Log.d("OFF", "OFF")
-                }
-            }
+            viewModel.validateCheck(requireContext(), requireActivity())
         }
 
         setTime.setOnClickListener {
