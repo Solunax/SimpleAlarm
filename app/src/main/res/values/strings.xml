@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">SimpleAlarm</string>
-    <string formatted="false" name = "alarm_time">%02d : %02d</string>
+    <string formatted = "false" name = "alarm_time">%02d : %02d</string>
+    <string formatted = "false" name = "lap_time">랩%d  %02d : %02d</string>
 </resources>

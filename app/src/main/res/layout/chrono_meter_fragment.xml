@@ -19,6 +19,11 @@
         android:layout_weight="10"/>
 
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/lap_time_recycler"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"/>
+
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
@@ -28,7 +33,7 @@
         android:background="@color/gray">
 
         <Button
-            android:id="@+id/start"
+            android:id="@+id/start_stop"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
@@ -43,14 +48,15 @@
             android:background="@color/deep_gray"/>
 
         <Button
-            android:id="@+id/reset"
+            android:id="@+id/lap_reset"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
+            android:enabled="false"
             android:background="@android:color/transparent"
             android:textColor="@color/white"
             android:textSize="16sp"
-            android:text="리셋" />
+            android:text="랩" />
 
     </LinearLayout>
 </LinearLayout>

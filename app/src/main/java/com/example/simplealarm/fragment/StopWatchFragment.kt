@@ -6,12 +6,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.simplealarm.databinding.ChronoMeterFragmentBinding
+import com.example.simplealarm.lapTimeRecycler.LapData
+import com.example.simplealarm.lapTimeRecycler.LapTimeRecyclerAdapter
 
 class StopWatchFragment : Fragment() {
     private var binding : ChronoMeterFragmentBinding? = null
-    var time = 0L
-    var state = false
+    private val recyclerAdapter = LapTimeRecyclerAdapter()
+    private var time = 0L
+    private var startState = false
+    private var lapState = false
+    private var lapTimeArrayList = ArrayList<LapData>()
+    private var lapTimeIndex = 1
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -20,37 +27,64 @@ class StopWatchFragment : Fragment() {
     ): View {
         binding = ChronoMeterFragmentBinding.inflate(inflater, container, false)
 
-        val start = binding!!.start
-        val reset = binding!!.reset
+        val startStop = binding!!.startStop
+        val lapReset = binding!!.lapReset
         val chronometer = binding!!.chronometer
+        val recyclerView = binding!!.lapTimeRecycler
 
-        start.setOnClickListener {
-            when(state){
+        recyclerAdapter.setHasStableIds(true)
+        recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        recyclerView.adapter = recyclerAdapter
+
+        startStop.setOnClickListener {
+            when(startState){
                 true -> {
                     time = chronometer.base - SystemClock.elapsedRealtime()
                     chronometer.stop()
-                    start.text = "시작"
-                    reset.isEnabled = true
+                    startStop.text = "시작"
+                    lapReset.text = "리셋"
+                    lapState = false
                 }
+
                 false -> {
                     chronometer.base = SystemClock.elapsedRealtime() + time
                     chronometer.start()
-                    start.text = "정지"
-                    reset.isEnabled = false
+                    startStop.text = "정지"
+                    lapReset.text = "랩"
+                    lapReset.isEnabled = true
+                    lapState = true
                 }
             }
 
-            state = !state
+            startState = !startState
         }
 
-        reset.setOnClickListener {
-            time = 0L
-            chronometer.base = SystemClock.elapsedRealtime()
-            chronometer.stop()
-
-            reset.isEnabled = false
+        lapReset.setOnClickListener {
+            when(lapState){
+                true -> {
+                    lapTimeArrayList.add(createLapTimeData(chronometer.text.toString()))
+                    recyclerAdapter.setData(lapTimeArrayList)
+                    recyclerView.scrollToPosition(lapTimeArrayList.size - 1)
+                }
+                false -> {
+                    time = 0L
+                    chronometer.base = SystemClock.elapsedRealtime()
+                    chronometer.stop()
+                    lapReset.isEnabled = false
+                    lapReset.text = "랩"
+                    lapTimeArrayList.clear()
+                    recyclerAdapter.setData(lapTimeArrayList)
+                    lapTimeIndex = 1
+                }
+            }
         }
 
         return binding!!.root
+    }
+
+    private fun createLapTimeData(lapTime : String) : LapData{
+        val time = lapTime.split(":").map { it.toInt() }
+
+        return LapData(lapTimeIndex++, time[0], time[1])
     }
 }
