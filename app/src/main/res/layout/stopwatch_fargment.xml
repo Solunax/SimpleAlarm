@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="stopWatch"
+            type="com.example.simplealarm.lapTimeRecycler.StopWatchTimeData" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#343434"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="10"
+            android:layout_marginTop="100dp">
+
+            <TextView
+                android:id="@+id/time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="40sp"
+                android:textAlignment="center"
+                android:text="@{@string/stop_watch(stopWatch.hour, stopWatch.minute, stopWatch.second, stopWatch.milSec)}" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/lap_time_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:background="@color/gray">
+
+            <Button
+                android:id="@+id/start_stop"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:text="시작" />
+
+            <View
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:background="@color/deep_gray" />
+
+            <Button
+                android:id="@+id/lap_reset"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:enabled="false"
+                android:background="@android:color/transparent"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:text="랩" />
+
+        </LinearLayout>
+    </LinearLayout>
+</layout>

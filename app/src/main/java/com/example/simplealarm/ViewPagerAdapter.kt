@@ -6,6 +6,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.simplealarm.fragment.AlarmFragment
 import com.example.simplealarm.fragment.StopWatchFragment
+import com.example.simplealarm.fragment.StopWatchFragmentV2
 import com.example.simplealarm.fragment.WorldTimeFragment
 
 class ViewPagerAdapter(fragmentManager : FragmentManager, lifecycle : Lifecycle) : FragmentStateAdapter(fragmentManager, lifecycle) {
@@ -17,7 +18,7 @@ class ViewPagerAdapter(fragmentManager : FragmentManager, lifecycle : Lifecycle)
         return when(position){
             0 -> AlarmFragment()
             1 -> WorldTimeFragment()
-            2 -> StopWatchFragment()
+            2 -> StopWatchFragmentV2()
             else -> AlarmFragment()
         }
     }
