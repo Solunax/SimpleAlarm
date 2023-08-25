@@ -7,7 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.simplealarm.StopWatchViewModel
 import com.example.simplealarm.databinding.StopwatchFargmentBinding
 import com.example.simplealarm.lapTimeRecycler.LapDataV2
 import com.example.simplealarm.lapTimeRecycler.LapTimeRecyclerAdapterV2
@@ -15,18 +17,14 @@ import com.example.simplealarm.lapTimeRecycler.StopWatchTimeData
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.concurrent.timer
 
 class StopWatchFragmentV2 : Fragment() {
     private var binding : StopwatchFargmentBinding? = null
     private val recyclerAdapter = LapTimeRecyclerAdapterV2()
-    private var startState = false
-    private var lapState = false
     private var lapTimeArrayList = ArrayList<LapDataV2>()
     private var lapTimeIndex = 1
-    private var timerTask : Timer? = null
+    private val viewModel : StopWatchViewModel by viewModels()
     private lateinit var stopWatchData : StopWatchTimeData
     private lateinit var stopWatchSharedPreferences : SharedPreferences
     private lateinit var lapTimeWatchSharedPreferences : SharedPreferences
@@ -44,33 +42,37 @@ class StopWatchFragmentV2 : Fragment() {
 
         stopWatchData = StopWatchTimeData(0, 0, 0, 0)
         loadSharedPreference()
-        binding!!.stopWatch = stopWatchData
 
         recyclerAdapter.setHasStableIds(true)
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         recyclerView.adapter = recyclerAdapter
 
+        // View Model의 스톱워치 데이터를 observe하여 값 변경시 View를 갱신
+        viewModel.stopWatchData.observe(viewLifecycleOwner){
+            binding!!.stopWatch = it
+        }
+        viewModel.setStopWatchData(stopWatchData)
+
         startStop.setOnClickListener {
-            when(startState){
+            when(viewModel.startState){
                 true -> {
                     startStop.text = "시작"
                     lapReset.text = "리셋"
-                    lapState = false
+                    viewModel.changeLapState(false)
                 }
 
                 false -> {
                     startStop.text = "정지"
                     lapReset.text = "랩"
                     lapReset.isEnabled = true
-                    lapState = true
+                    viewModel.changeLapState(true)
                 }
             }
-
-            startState = !startState
+            viewModel.changeStartState(!viewModel.startState)
         }
 
         lapReset.setOnClickListener {
-            when(lapState){
+            when(viewModel.lapState){
                 true -> {
                     lapTimeArrayList.add(createLapTimeData())
                     recyclerAdapter.setData(lapTimeArrayList)
@@ -80,18 +82,15 @@ class StopWatchFragmentV2 : Fragment() {
             }
         }
 
-        timerTask =  timer(period = 10){
-            if(lapState){
-                stopWatchData.milSec++
-                stopWatchData.calculateTime()
-                binding!!.stopWatch = stopWatchData
-            }
-        }
-
-        if(lapTimeArrayList.isNotEmpty()){
+        // 기존 값이 있는지 확인, 있다면 리셋 기능 활성화
+        if(lapTimeArrayList.isNotEmpty() ||
+            viewModel.stopWatchData.value?.hour != 0 ||
+            viewModel.stopWatchData.value?.minute != 0 ||
+            viewModel.stopWatchData.value?.second != 0 ||
+            viewModel.stopWatchData.value?.milSec != 0){
             lapReset.text = "리셋"
             lapReset.isEnabled = true
-            lapState = false
+            viewModel.changeLapState(false)
         }
 
         return binding!!.root
@@ -102,10 +101,10 @@ class StopWatchFragmentV2 : Fragment() {
     }
 
     private fun reset(){
-        stopWatchData.reset()
         binding!!.stopWatch = stopWatchData
         binding!!.lapReset.isEnabled = false
         binding!!.lapReset.text = "랩"
+        viewModel.reset()
         lapTimeArrayList.clear()
         recyclerAdapter.setData(lapTimeArrayList)
         lapTimeIndex = 1
