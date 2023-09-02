@@ -20,6 +20,8 @@ class MainActivity : AppCompatActivity() {
         val tabLayout = binding.tabLayout
 
         viewPager.adapter =  ViewPagerAdapter(supportFragmentManager, lifecycle)
+
+        // TabLayout 에 각 Fragment 이름을 지정
         TabLayoutMediator(tabLayout, viewPager){ tab, position ->
             when(position){
                 0 -> tab.text = tabName[0]

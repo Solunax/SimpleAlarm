@@ -20,8 +20,11 @@ class StopWatchViewModel @Inject constructor() : ViewModel() {
     private var _lapState = false
     val lapState get() = _lapState
 
+    // 스톱워치 데이터 - 만약 SharedPreference 저장된 데이터가 없을경우 초기상태로 사용
     private var stopWatchTime = StopWatchTimeData(0, 0, 0, 0)
 
+    // 스톱워치 기능을 수행하는 Timer 객체
+    // lapState Flag 에 따라 시간을 증가시킴
     private var timerTask = timer(period = 10){
         if(_lapState){
             stopWatchTime.milSec++
