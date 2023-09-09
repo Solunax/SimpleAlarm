@@ -31,6 +31,7 @@ class TimeSetDialog(context : Context, mInterface : TimePickerInterface) : Dialo
         }
 
         ok.setOnClickListener {
+            // 사용자가 TimePicker 에서 아무런 동작을 하지 않고 수행시 getTime 메소드 수행
             if(hour == null && minute == null)
                 getTime()
 

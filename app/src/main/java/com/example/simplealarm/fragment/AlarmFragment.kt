@@ -29,6 +29,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 @AndroidEntryPoint
+// RecyclerView 및 TimePicker Dialog 에서 발생한 Click Event 를 처리하기 위한 Interface 구현
 class AlarmFragment : Fragment(), TimePickerInterface, AlarmRecyclerClickCallback {
     private var binding : AlarmFragmentBinding? = null
     private val viewModel : AlarmViewModel by viewModels()

@@ -27,12 +27,14 @@ import java.text.SimpleDateFormat
 import kotlin.concurrent.timer
 
 @AndroidEntryPoint
+// RecyclerView 및 Country Add Dialog 에서 발생한 Click Event 를 처리하기 위한 Interface 구현
 class WorldTimeFragment : Fragment(), CountryAddInterface, WorldTimeRecyclerClickCallback {
     private var binding: WorldTimeFragmentBinding? = null
     private val recyclerAdapter = WorldTimeRecyclerAdapter(this)
     private var countryData = ArrayList<CountryTime>()
     private lateinit var country: Array<String>
     private lateinit var timeZoneData : Array<String>
+    // 현재 시간중 몇초인지 여부를 확인하기 위한 SimpleDateFormat
     private val df = SimpleDateFormat("ss")
     private lateinit var sharedPreferences : SharedPreferences
 
@@ -61,7 +63,7 @@ class WorldTimeFragment : Fragment(), CountryAddInterface, WorldTimeRecyclerClic
         }
 
         timer(period = 1000) {
-            // 1초주기로 0분이 될때마다 리사이클러 뷰의 아이템 항목을 최신화
+            // 1초 주기로 00초가 될 때마다 리사이클러 뷰의 아이템 항목을 최신화
             if (df.format(System.currentTimeMillis()) == "00") {
                 requireActivity().runOnUiThread {
                     recyclerAdapter.setData(countryData)

@@ -11,6 +11,7 @@ class LapTimeRecyclerAdapterV2 : RecyclerView.Adapter<LapTimeRecyclerAdapterV2.L
     private var lapTimeData = emptyList<LapDataV2>()
 
     class LapTimeViewHolder(private val binding : LaptimeRecyclerItemV2Binding) : RecyclerView.ViewHolder(binding.root){
+        // View에 표시현할 데이터를 DataBinding 하기 위한 데이터를 넘겨주는 부분
         fun bind(data: LapDataV2){
             binding.lapTime = data
         }

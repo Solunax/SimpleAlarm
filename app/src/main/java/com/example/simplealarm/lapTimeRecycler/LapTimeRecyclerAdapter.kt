@@ -6,6 +6,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.simplealarm.databinding.LaptimeRecyclerItemBinding
 
+// ChronoMeter를 사용할 때 사용한 Recycler Adapter
+// Recycler Adapter V2와 차이는 스톱 워치로 ChronoMeter 를 사용했는지,  Timer 를 사용했는지의 차이
+// Timer는 milsec까지 확인 가능
 class LapTimeRecyclerAdapter : RecyclerView.Adapter<LapTimeRecyclerAdapter.LapTimeViewHolder>() {
     private var lapTimeData = emptyList<LapData>()
 
