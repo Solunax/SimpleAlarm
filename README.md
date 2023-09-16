@@ -98,4 +98,4 @@
 - 스톱워치 ViewModel 추가, 기존 타이머 객체 위치를 ViewModel로 이동
 - 스톱워치 부분 주석 추가
 - Hilt @Qualifier 어노테이션으로 Repository 구분
-- Alamr 설정, 취소 부분 오류 수정
+- Alarm 설정, 취소 부분 오류 수정
