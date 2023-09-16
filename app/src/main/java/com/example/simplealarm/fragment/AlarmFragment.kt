@@ -91,57 +91,55 @@ class AlarmFragment : Fragment(), TimePickerInterface, AlarmRecyclerClickCallbac
     @RequiresApi(Build.VERSION_CODES.M)
     // Recycler View 에서 클릭 이벤트 발생시(CheckBox)
     override fun onClick(position: Int, state: Boolean){
-        if(::alarm.isInitialized){
-            // 알람 데이터 중 현재 선택된 알람의 인스턴스를 가져옴
-            alarmData.forEach {
-                if(it.alarmID == position)
-                    alarm = it
-            }
-
-            // Check Box 의 상태에 따라 다른 동작 실행
-            // Check Box 가 활성 -> 새로운 알람을 Alarm Manager 에 설정
-            // Check Box 가 비활성 -> 등록된 알람을 Alarm Manager 에서 제거
-            if(state){
-                val now = Calendar.getInstance().time
-
-                calendar.apply {
-                    set(Calendar.HOUR_OF_DAY, alarm.hour)
-                    set(Calendar.MINUTE, alarm.minute)
-                    set(Calendar.SECOND, 0)
-                }
-
-                if(now.after(calendar.time)){
-                    Toast.makeText(context, "다음 날로 알람을 설정 합니다.", Toast.LENGTH_SHORT).show()
-                    calendar.add(Calendar.DATE, 1)
-                }
-
-                val intent = Intent(activity, AlarmReceiver::class.java)
-                intent.putExtra("id", position)
-
-                val pendingIntent = PendingIntent.getBroadcast(
-                    context,
-                    position,
-                    intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
-                )
-
-                alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    calendar.timeInMillis,
-                    pendingIntent
-                )
-
-                alarm.isOn = true
-                Log.d("SET", "알람 설정됨")
-            }else{
-                cancelAlarm(position)
-
-                alarm.isOn = false
-                Log.d("SET", "알람 중지됨")
-            }
-
-            viewModel.editAlarmState(alarm.alarmID, alarm.isOn)
+        // 알람 데이터 중 현재 선택된 알람의 인스턴스를 가져옴
+        alarmData.forEach {
+            if(it.alarmID == position)
+                alarm = it
         }
+
+        // Check Box 의 상태에 따라 다른 동작 실행
+        // Check Box 가 활성 -> 새로운 알람을 Alarm Manager 에 설정
+        // Check Box 가 비활성 -> 등록된 알람을 Alarm Manager 에서 제거
+        if(state){
+            val now = Calendar.getInstance().time
+
+            calendar.apply {
+                set(Calendar.HOUR_OF_DAY, alarm.hour)
+                set(Calendar.MINUTE, alarm.minute)
+                set(Calendar.SECOND, 0)
+            }
+
+            if(now.after(calendar.time)){
+                Toast.makeText(context, "다음 날로 알람을 설정 합니다.", Toast.LENGTH_SHORT).show()
+                calendar.add(Calendar.DATE, 1)
+            }
+
+            val intent = Intent(activity, AlarmReceiver::class.java)
+            intent.putExtra("id", position)
+
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                position,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT
+            )
+
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                calendar.timeInMillis,
+                pendingIntent
+            )
+
+            alarm.isOn = true
+            Log.d("SET", "알람 설정됨")
+        }else{
+            cancelAlarm(position)
+
+            alarm.isOn = false
+            Log.d("SET", "알람 중지됨")
+        }
+
+        viewModel.editAlarmState(alarm.alarmID, alarm.isOn)
     }
 
     // RecyclerView 에서 발생한 이벤트 처리를 위한 Interface 구현 메소드

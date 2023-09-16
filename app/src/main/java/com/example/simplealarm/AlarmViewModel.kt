@@ -7,6 +7,7 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.simplealarm.repository.LocalRepository
 import com.example.simplealarm.repository.RepositoryInterface
 import com.example.simplealarm.room.Alarm
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,8 +15,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+// @Qualifier 로 Repository 를 구분, 어노테이션을 통해 어떤 Repository 인지 구분해 주어야 함
 @HiltViewModel
-class AlarmViewModel @Inject constructor(private val repository: RepositoryInterface) : androidx.lifecycle.ViewModel() {
+class AlarmViewModel @Inject constructor(@LocalRepository private val repository: RepositoryInterface) : androidx.lifecycle.ViewModel() {
     private val _alarmData : LiveData<List<Alarm>> = repository.alarmData.asLiveData()
     val alarmData get() = _alarmData
 
