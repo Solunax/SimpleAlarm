@@ -76,7 +76,7 @@
 
 
 
-## 추가 변경 사항
+## 추가 변경 사항(로그)
 - 다수의 알람을 동시에 등록할 수 있게 수정함, 등록된 알람 목록은 Recycler View를 통해 표시(내부 DB에 저장된 알람)
 - Recycler View에 알람 데이터가 시간순으로 정렬되어 표시되게 함
 - Hilt 라이브러리 적용
@@ -99,3 +99,4 @@
 - 스톱워치 부분 주석 추가
 - Hilt @Qualifier 어노테이션으로 Repository 구분
 - Alarm 설정, 취소 부분 오류 수정
+- 알람 발생시 Notification을 클릭해 Activity를 실행할 수 있게 수정 
