@@ -2,11 +2,11 @@ package com.example.simplealarm
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -48,10 +48,14 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private fun startNotify(context: Context){
         with(NotificationManagerCompat.from(context)){
+            val intent = Intent(context, MainActivity::class.java)
+            val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+
             val build = NotificationCompat.Builder(context, channelID)
                 .setContentTitle("알람")
                 .setContentText("알람 시간입니다.")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
             try{
                 notify(notificationID, build.build())

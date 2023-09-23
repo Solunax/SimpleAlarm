@@ -16,6 +16,7 @@
         android:theme="@style/Theme.SimpleAlarm"
         tools:targetApi="31">
         <activity
+            android:launchMode="singleInstance"
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
