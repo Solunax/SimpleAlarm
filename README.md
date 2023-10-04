@@ -29,7 +29,7 @@
 ## 구동 사진
 ### 최초 실행화면
 
-![m1](https://github.com/Solunax/SimpleAlarm/assets/97011241/135b0ee2-61e0-453c-93e1-132d06d39d3e)
+![alarm1](https://github.com/Solunax/SimpleAlarm/assets/97011241/fe9c8b92-920d-4787-8644-bcfb2874e8b3)
 
     - Tab Layout 및 View Pager로 activity를 구성하여 스와이프 혹은 tab 클릭으로 화면을 전환할 수 있음
   
@@ -37,65 +37,57 @@
 
 ### 알람 설정 및 동작
 
-![a1](https://github.com/Solunax/SimpleAlarm/assets/97011241/029f3742-6d33-403d-8452-16949fa9b995)
+![main](https://github.com/Solunax/SimpleAlarm/assets/97011241/6c5c765c-6bd0-4a87-843e-b18c997cc803)
 
     - 하단의 알람추가 버튼을 통해 원하는 시각에 알람이 울리도록 설정할 수 있음
 
-![a3](https://github.com/Solunax/SimpleAlarm/assets/97011241/cb3a47d2-bc0f-409a-842d-b0356e6f63b5)
+![alarm2](https://github.com/Solunax/SimpleAlarm/assets/97011241/7cbb870e-c99e-4104-b2b5-4b17a4ed16bc)
 
     - 추가를 완료하면 최초에 비활성화 상태로 알람이 추가됨
     - 시간 우측 switch로 활성화 및 비활성화 가능, 쓰레기통 버튼을 사용해 알람 삭제 가능
 
-![a4](https://github.com/Solunax/SimpleAlarm/assets/97011241/b49acec8-f63b-4822-a0f6-0824f1bc5f1d)
-![a5](https://github.com/Solunax/SimpleAlarm/assets/97011241/06b7756f-c021-43b5-8184-7bd67d40ca4e)
+![alarm3-1](https://github.com/Solunax/SimpleAlarm/assets/97011241/61b0a45e-6557-463a-bf2c-0100a9eb0747)
+![alarm3-2](https://github.com/Solunax/SimpleAlarm/assets/97011241/4dbd0473-9158-4001-a38c-5c72a006c459)
 
     - 사용자가 지정한 시간이 되면 Notification이 발생하여 사용자에게 시간이 되었음을 알려줌
+    - 알람 발생시 알람 영역을 터치해 알람 앱을 실행할 수 있음
 
-![a6](https://github.com/Solunax/SimpleAlarm/assets/97011241/7670f276-e642-4d6b-9227-8549e46a063a)
+![alarm4](https://github.com/Solunax/SimpleAlarm/assets/97011241/23f05391-8cdc-48eb-beda-b0683a64b9ad)
 
     - 알람이 울림과 동시에 활성화 된 알람은 비활성화 상태로 변경됨
-    - 알람의 정보는 내부 DB에 저장되며, 이는 BroadcastReceiver를 통해 알람이 울리면 정보가 갱신되게 함
-
+    - 알람의 정보는 내부 DB에 저장되며, 이는 BroadcastReceiver를 통해 알람이 울릴 때 내부 DB의 정보가 갱신되게 함
 
 <br>
 
 ### 세계시간 설정
 
-![t1](https://github.com/Solunax/SimpleAlarm/assets/97011241/70874981-927e-4dc7-b964-f0bd9ce677b5)
+![wc1](https://github.com/Solunax/SimpleAlarm/assets/97011241/466433de-4f49-4eca-8e2f-7b4d9abef997)
 
     - 세계시간 tab을 선택했을 때 보게되는 화면
     
-![t2](https://github.com/Solunax/SimpleAlarm/assets/97011241/42fcbc25-2362-4bc1-989c-4b76b8dc11df)
+![wc2](https://github.com/Solunax/SimpleAlarm/assets/97011241/6f9fc9e4-04e1-465a-8094-d37671c3787b)
 
     - 하단 버튼을 통해 원하는 국가의 현재 시간을 추가할 수 있음
     
-![t3](https://github.com/Solunax/SimpleAlarm/assets/97011241/788a12dc-203e-47d8-bbba-fa9ec29538f8)
+![wc3](https://github.com/Solunax/SimpleAlarm/assets/97011241/1582d4dd-5bed-4e9b-8bba-76d7ed58e64c)
 
     - 국가는 원하는 만큼, 추가한 순서대로 배치되며 우측의 쓰레기통 버튼을 통해 삭제할 수 있음
     - SharedPreference를 활용하여 사용자가 국가를 추가 및 삭제할 때 마다 갱신되며, 앱을 껏다 켜도 해당 정보가 유지됨
 
+<br>
 
+### 스톱워치 기능
 
-## 추가 변경 사항
-- 다수의 알람을 동시에 등록할 수 있게 수정함, 등록된 알람 목록은 Recycler View를 통해 표시(내부 DB에 저장된 알람)
-- Recycler View에 알람 데이터가 시간순으로 정렬되어 표시되게 함
-- Hilt 라이브러리 적용
-- 알람 데이터 정렬을 data observe 에서 하는게 아닌 DAO 에서 ORDER BY로 정렬하게 수정
-- 알람 활성화 후 데이터 추가/삭제시 Recycler View 의 스위치 상태가 이상한 오류 수정 
-- Hilt 적용시 불필요한 코드 제거
-- Repository가 Interface를 구현하도록 수정
-- View Model이 Interface 타입을 주입받도록 수정(Interface를 주입할 때 Module을 만들어서 인터페이스와 구현 클래스를 연결해야 함(@Module, @Binds, 추상클래스))
-- 알람이 울리면 삭제되는게 아닌 비활성화 되도록 변경, 알람 활성/비활성화시 로직 수정
-- 코드 일부 주석 추가, 알람 설정시 현재 시간을 초기값으로 가지게 수정
-- 세계 시간 확인 기능 추가, 기능 추가에 따른 알람 Activity -> Fragment 수정
-- 사용자가 보기로 지정한 세계 시간을 Shared Preference에 저장하는 기능 추가
-- 세계 시간 로딩방법 변경(values/array), 세계 시간 추가시 when 구문 수정
-- Layout 수정
-- 스톱워치 기능 추가
-- 스톱워치 랩타임 저장 기능 추가
-- 스톱워치 구현(0.01초 단위, 기존 chronometer 대신 timer 사용)
-- 스톱워치 시간 및 랩타임 저장기능(sharedPreference)
-- 스톱워치 ViewModel 추가, 기존 타이머 객체 위치를 ViewModel로 이동
-- 스톱워치 부분 주석 추가
-- Hilt @Qualifier 어노테이션으로 Repository 구분
-- Alarm 설정, 취소 부분 오류 수정
+![sw1](https://github.com/Solunax/SimpleAlarm/assets/97011241/f70e35a2-8f5b-4172-94ee-bf3e136c92a3)
+
+    - 스톱워치 tab을 선택했을 때 보게되는 화면
+
+![sw2](https://github.com/Solunax/SimpleAlarm/assets/97011241/69f1a4aa-718b-4abd-b694-496ca616292a)
+
+    - 스톱워치 시작 후 랩 버튼을 터치하여 랩 타임을 기록할 수 있음
+
+![sw3](https://github.com/Solunax/SimpleAlarm/assets/97011241/5344481d-9fb6-4a6f-abf0-22a063e55119)
+
+    - 정지버튼을 누르면 랩 버튼이 리셋 버튼으로 바뀜
+    - 이 때 리셋 버튼을 터치하면 랩 타임 기록과 스톱워치의 시간 정보를 초기화함
+    - 스톱워치의 랩타임과 시간 정보는 리셋 전 까지 데이터가 유지됨(앱을 꺼도 유지됨, SharedPreference)
