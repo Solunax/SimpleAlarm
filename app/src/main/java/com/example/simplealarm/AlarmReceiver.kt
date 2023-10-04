@@ -49,7 +49,7 @@ class AlarmReceiver : BroadcastReceiver() {
     private fun startNotify(context: Context){
         with(NotificationManagerCompat.from(context)){
             val intent = Intent(context, MainActivity::class.java)
-            val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+            val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
             val build = NotificationCompat.Builder(context, channelID)
                 .setContentTitle("알람")
@@ -57,6 +57,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setAutoCancel(true)
             try{
                 notify(notificationID, build.build())
             }catch (e : SecurityException){

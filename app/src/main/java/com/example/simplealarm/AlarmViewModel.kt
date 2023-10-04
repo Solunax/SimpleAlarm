@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 // @Qualifier 로 Repository 를 구분, 어노테이션을 통해 어떤 Repository 인지 구분해 주어야 함
 @HiltViewModel
-class AlarmViewModel @Inject constructor(@LocalRepository private val repository: RepositoryInterface) : androidx.lifecycle.ViewModel() {
+class AlarmViewModel @Inject constructor(@LocalRepository private val repository : RepositoryInterface) : androidx.lifecycle.ViewModel() {
     private val _alarmData : LiveData<List<Alarm>> = repository.alarmData.asLiveData()
     val alarmData get() = _alarmData
 
@@ -45,7 +45,7 @@ class AlarmViewModel @Inject constructor(@LocalRepository private val repository
                 context,
                 v.alarmID,
                 Intent(activity, AlarmReceiver::class.java),
-                PendingIntent.FLAG_NO_CREATE
+                PendingIntent.FLAG_IMMUTABLE
             )
 
             // pending intent 가 존재하지 않는데, 알람이 활성화 되어있으면 내부 DB 알람 상태를 변경

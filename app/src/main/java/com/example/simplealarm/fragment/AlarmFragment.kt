@@ -7,7 +7,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -75,7 +75,7 @@ class AlarmFragment : Fragment(), TimePickerInterface, AlarmRecyclerClickCallbac
             context,
             position,
             Intent(activity, AlarmReceiver::class.java),
-            PendingIntent.FLAG_NO_CREATE
+            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE
         )
 
         pendingIntent?.cancel()
@@ -88,8 +88,8 @@ class AlarmFragment : Fragment(), TimePickerInterface, AlarmRecyclerClickCallbac
     }
 
     // RecyclerView 에서 발생한 이벤트 처리를 위한 Interface 구현 메소드
-    @RequiresApi(Build.VERSION_CODES.M)
     // Recycler View 에서 클릭 이벤트 발생시(CheckBox)
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onClick(position: Int, state: Boolean){
         // 알람 데이터 중 현재 선택된 알람의 인스턴스를 가져옴
         alarmData.forEach {
@@ -101,6 +101,7 @@ class AlarmFragment : Fragment(), TimePickerInterface, AlarmRecyclerClickCallbac
         // Check Box 가 활성 -> 새로운 알람을 Alarm Manager 에 설정
         // Check Box 가 비활성 -> 등록된 알람을 Alarm Manager 에서 제거
         if(state){
+            var tomorrowCheck = false
             val now = Calendar.getInstance().time
 
             calendar.apply {
@@ -110,7 +111,7 @@ class AlarmFragment : Fragment(), TimePickerInterface, AlarmRecyclerClickCallbac
             }
 
             if(now.after(calendar.time)){
-                Toast.makeText(context, "다음 날로 알람을 설정 합니다.", Toast.LENGTH_SHORT).show()
+                tomorrowCheck = true
                 calendar.add(Calendar.DATE, 1)
             }
 
@@ -124,27 +125,53 @@ class AlarmFragment : Fragment(), TimePickerInterface, AlarmRecyclerClickCallbac
                 PendingIntent.FLAG_UPDATE_CURRENT
             )
 
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                calendar.timeInMillis,
-                pendingIntent
-            )
+            // 알람 권한이 설정 됐는지 확인하기 위한 if 구문 및 flag
+            var isSuccess = true
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if(alarmManager.canScheduleExactAlarms()){
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        pendingIntent
+                    )
+                }else{
+                    // 권한이 설정되지 않았을 경우 flag 값 변경 및 알람 권한을 설정하기 위한 Intent를 실행
+                    isSuccess = false
+                    Toast.makeText(context, "권한 설정이 필요합니다.", Toast.LENGTH_SHORT).show()
+                    Intent().apply {
+                        action = ACTION_REQUEST_SCHEDULE_EXACT_ALARM
+                    }.also {
+                        startActivity(it)
+                    }
+                }
+            } else {
+                alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP,
+                    calendar.timeInMillis,
+                    pendingIntent
+                )
+            }
 
-            alarm.isOn = true
-            Log.d("SET", "알람 설정됨")
+            // 권한 설정된 상태에서만 동작
+            if(isSuccess){
+                alarm.isOn = true
+                Toast.makeText(context, "${calendar.get(Calendar.MONTH) + 1}월 ${calendar.get(Calendar.DATE)}일\n${calendar.get(Calendar.HOUR_OF_DAY)}시 ${calendar.get(Calendar.MINUTE)}분에 알람이 울립니다.", Toast.LENGTH_SHORT).show()
+            }
+
+            // 알람이 다음날로 설정 됐을 경우 Calendar 인스턴스에 더한 하루를 빼줌
+            if(tomorrowCheck)
+                calendar.add(Calendar.DATE, -1)
         }else{
             cancelAlarm(position)
-
             alarm.isOn = false
-            Log.d("SET", "알람 중지됨")
         }
 
         viewModel.editAlarmState(alarm.alarmID, alarm.isOn)
     }
 
     // RecyclerView 에서 발생한 이벤트 처리를 위한 Interface 구현 메소드
-    override fun onClickDelete(position: Int) {
-        cancelAlarm(position)
-        viewModel.deleteAlarm(position)
+    override fun onClickDelete(index : Int) {
+        cancelAlarm(index)
+        viewModel.deleteAlarm(index)
     }
 }

@@ -4,5 +4,5 @@ package com.example.simplealarm.alarmRecycler
 // Activity 에서 구현하여 발생한 이벤트에 맞는 동작을 수행
 interface AlarmRecyclerClickCallback {
     fun onClick(position : Int, state : Boolean)
-    fun onClickDelete(position: Int)
+    fun onClickDelete(index : Int)
 }
