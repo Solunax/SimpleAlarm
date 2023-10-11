@@ -1,18 +1,25 @@
 package com.example.simplealarm.fragment
 
+import android.Manifest
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,6 +45,14 @@ class AlarmFragment : Fragment(), TimePickerInterface, AlarmRecyclerClickCallbac
     private lateinit var alarmManager: AlarmManager
     private val recyclerAdapter = AlarmRecyclerAdapter(this)
     private var alarmData : List<Alarm> = emptyList()
+    private var alarmPermission = false
+
+    private val notificationPermissionActivity = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ){ granted ->
+        if(!granted)
+            Toast.makeText(context, "권한 설정을 거부하여 알람을 활성할 수 없습니다.", Toast.LENGTH_SHORT).show()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -118,15 +133,24 @@ class AlarmFragment : Fragment(), TimePickerInterface, AlarmRecyclerClickCallbac
             val intent = Intent(activity, AlarmReceiver::class.java)
             intent.putExtra("id", position)
 
-            val pendingIntent = PendingIntent.getBroadcast(
-                context,
-                position,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-            )
+
+            val pendingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+                PendingIntent.getBroadcast(
+                    context,
+                    position,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
+            }else{
+                PendingIntent.getBroadcast(
+                    context,
+                    position,
+                    intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            }
 
             // 알람 권한이 설정 됐는지 확인하기 위한 if 구문 및 flag
-            var isSuccess = true
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if(alarmManager.canScheduleExactAlarms()){
                     alarmManager.setExactAndAllowWhileIdle(
@@ -134,15 +158,17 @@ class AlarmFragment : Fragment(), TimePickerInterface, AlarmRecyclerClickCallbac
                         calendar.timeInMillis,
                         pendingIntent
                     )
+                    alarmPermission = true
                 }else{
                     // 권한이 설정되지 않았을 경우 flag 값 변경 및 알람 권한을 설정하기 위한 Intent를 실행
-                    isSuccess = false
-                    Toast.makeText(context, "권한 설정이 필요합니다.", Toast.LENGTH_SHORT).show()
+                    alarmPermission = false
+                    Toast.makeText(context, "알람 권한 설정이 필요합니다.", Toast.LENGTH_SHORT).show()
                     Intent().apply {
                         action = ACTION_REQUEST_SCHEDULE_EXACT_ALARM
                     }.also {
                         startActivity(it)
                     }
+                    Manifest.permission.SCHEDULE_EXACT_ALARM
                 }
             } else {
                 alarmManager.setExactAndAllowWhileIdle(
@@ -152,8 +178,42 @@ class AlarmFragment : Fragment(), TimePickerInterface, AlarmRecyclerClickCallbac
                 )
             }
 
-            // 권한 설정된 상태에서만 동작
-            if(isSuccess){
+            // Notification 권한 체크
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+                // 만약 사용자가 권한 체크를 거부한 적이 있을 경우 직접 권한을 설정하게 끔 설정
+                // 사용자가 다시 권한 요청이 뜨는 것을 거부한 경우도 있긴 하지만 두가지 경우만 체크
+                if(ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.POST_NOTIFICATIONS)){
+                    Toast.makeText(context, "과거에 알람 권한 설정을 거부하여 직접 승인해야 합니다.", Toast.LENGTH_SHORT).show()
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.fromParts("package", requireContext().packageName, null))
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).also {
+                        startActivity(it)
+                    }
+                }else{
+                    Toast.makeText(context, "알람 권한 설정이 필요합니다.", Toast.LENGTH_SHORT).show()
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                        notificationPermissionActivity.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    else{
+                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.fromParts("package", requireContext().packageName, null))
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).also {
+                                startActivity(it)
+                            }
+                    }
+                }
+            }
+
+            // 권한 설정된 상태에서만 동작, 상위 버전일 경우 체크
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+                if(alarmPermission &&
+                    ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                    alarm.isOn = true
+                    Toast.makeText(context, "${calendar.get(Calendar.MONTH) + 1}월 ${calendar.get(Calendar.DATE)}일\n${calendar.get(Calendar.HOUR_OF_DAY)}시 ${calendar.get(Calendar.MINUTE)}분에 알람이 울립니다.", Toast.LENGTH_SHORT).show()
+                }
+            }else{
                 alarm.isOn = true
                 Toast.makeText(context, "${calendar.get(Calendar.MONTH) + 1}월 ${calendar.get(Calendar.DATE)}일\n${calendar.get(Calendar.HOUR_OF_DAY)}시 ${calendar.get(Calendar.MINUTE)}분에 알람이 울립니다.", Toast.LENGTH_SHORT).show()
             }

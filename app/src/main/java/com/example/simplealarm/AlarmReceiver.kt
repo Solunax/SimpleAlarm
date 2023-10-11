@@ -47,9 +47,14 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     private fun startNotify(context: Context){
+        // Scope 함수 - with : run 같은 . 을 사용하는 참조연산자 형태가 아닌 파라미터 형태로 사용
         with(NotificationManagerCompat.from(context)){
             val intent = Intent(context, MainActivity::class.java)
-            val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+            val pendingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+            else
+                PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
             val build = NotificationCompat.Builder(context, channelID)
                 .setContentTitle("알람")
@@ -58,6 +63,7 @@ class AlarmReceiver : BroadcastReceiver() {
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setAutoCancel(true)
+
             try{
                 notify(notificationID, build.build())
             }catch (e : SecurityException){
