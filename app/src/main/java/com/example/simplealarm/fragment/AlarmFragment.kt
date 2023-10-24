@@ -72,7 +72,7 @@ class AlarmFragment : Fragment(), TimePickerInterface, AlarmRecyclerClickCallbac
         viewModel.alarmData.observe(viewLifecycleOwner){
             alarmData = it
             recyclerAdapter.setData(alarmData)
-            viewModel.validateCheck(requireContext(), requireActivity())
+            viewModel.alarmValidateCheck(requireContext(), requireActivity())
         }
 
         setTime.setOnClickListener {
@@ -103,9 +103,9 @@ class AlarmFragment : Fragment(), TimePickerInterface, AlarmRecyclerClickCallbac
     }
 
     // RecyclerView 에서 발생한 이벤트 처리를 위한 Interface 구현 메소드
-    // Recycler View 에서 클릭 이벤트 발생시(CheckBox)
+    // RecyclerView 에서 클릭 이벤트 발생시(CheckBox)
     @RequiresApi(Build.VERSION_CODES.M)
-    override fun onClick(position: Int, state: Boolean){
+    override fun onClickSetAlarm(position: Int, state: Boolean){
         // 알람 데이터 중 현재 선택된 알람의 인스턴스를 가져옴
         alarmData.forEach {
             if(it.alarmID == position)
@@ -230,7 +230,7 @@ class AlarmFragment : Fragment(), TimePickerInterface, AlarmRecyclerClickCallbac
     }
 
     // RecyclerView 에서 발생한 이벤트 처리를 위한 Interface 구현 메소드
-    override fun onClickDelete(index : Int) {
+    override fun onClickDeleteAlarm(index : Int) {
         cancelAlarm(index)
         viewModel.deleteAlarm(index)
     }

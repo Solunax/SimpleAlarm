@@ -39,7 +39,8 @@ class AlarmViewModel @Inject constructor(@LocalRepository private val repository
         }
     }
 
-    fun validateCheck(context : Context, activity: Activity){
+    // 알람 유효성 검사
+    fun alarmValidateCheck(context : Context, activity: Activity){
         _alarmData.value?.forEach { v ->
             val pendingIntent = PendingIntent.getBroadcast(
                 context,

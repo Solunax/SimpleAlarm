@@ -21,11 +21,12 @@ class AlarmRecyclerAdapter(recyclerInterface : AlarmRecyclerClickCallback) : Rec
 
             // 알람 스위치
             binding.alarmSwitch.setOnCheckedChangeListener { _, check ->
-                mInterface.onClick(alarm.alarmID, check)
+                mInterface.onClickSetAlarm(alarm.alarmID, check)
             }
 
+            // 알람 삭제 버튼
             binding.delete.setOnClickListener {
-                mInterface.onClickDelete(alarm.alarmID)
+                mInterface.onClickDeleteAlarm(alarm.alarmID)
             }
         }
     }
