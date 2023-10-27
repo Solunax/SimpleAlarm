@@ -51,10 +51,11 @@ class AlarmReceiver : BroadcastReceiver() {
         with(NotificationManagerCompat.from(context)){
             val intent = Intent(context, MainActivity::class.java)
 
-            val pendingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            val pendingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
                 PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-            else
+            } else {
                 PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            }
 
             val build = NotificationCompat.Builder(context, channelID)
                 .setContentTitle("알람")
