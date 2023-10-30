@@ -40,7 +40,6 @@ class StopWatchFragmentV2 : Fragment() {
         val lapReset = binding!!.lapReset
         val recyclerView = binding!!.lapTimeRecycler
 
-        stopWatchData = StopWatchTimeData(0, 0, 0, 0)
         // SharedPreference 에 저장된 값을 불러옴(stopWatchData, lapTime 데이터)
         loadSharedPreference()
 
@@ -64,14 +63,14 @@ class StopWatchFragmentV2 : Fragment() {
                 true -> {
                     startStop.text = "시작"
                     lapReset.text = "리셋"
-                    viewModel.changeLapState(false)
+                    viewModel.changeStopWatchState(false)
                 }
 
                 false -> {
                     startStop.text = "정지"
                     lapReset.text = "랩"
                     lapReset.isEnabled = true
-                    viewModel.changeLapState(true)
+                    viewModel.changeStopWatchState(true)
                 }
             }
             viewModel.changeStartState(!viewModel.startState)
@@ -80,7 +79,7 @@ class StopWatchFragmentV2 : Fragment() {
         // 스톱워치가 활성화되어 있으면 lapTime을 저장
         // 스톱워치가 비활성화되어 있고, 저장된 lapTime이 있다면 Reset기능을 수행함
         lapReset.setOnClickListener {
-            when(viewModel.lapState){
+            when(viewModel.stopWatchState){
                 true -> {
                     lapTimeArrayList.add(createLapTimeData())
                     recyclerAdapter.setData(lapTimeArrayList)
@@ -91,6 +90,7 @@ class StopWatchFragmentV2 : Fragment() {
         }
 
         // 기존 값이 있는지 확인, 있다면 리셋 기능 활성화
+        // 앱 실행 후 최초 1회 동작(앱 종료 이전에 저장된 값 초기화시)
         if(lapTimeArrayList.isNotEmpty() ||
             viewModel.stopWatchData.value?.hour != 0 ||
             viewModel.stopWatchData.value?.minute != 0 ||
@@ -98,7 +98,6 @@ class StopWatchFragmentV2 : Fragment() {
             viewModel.stopWatchData.value?.milSec != 0){
             lapReset.text = "리셋"
             lapReset.isEnabled = true
-            viewModel.changeLapState(false)
         }
 
         return binding!!.root
@@ -123,7 +122,7 @@ class StopWatchFragmentV2 : Fragment() {
         saveSharedPreference()
     }
 
-        // onAttach 단계에서 SharedPreference에 저장된 항목을 불러옴
+    // onAttach 단계에서 SharedPreference에 저장된 항목을 불러옴
     override fun onAttach(context: Context) {
         super.onAttach(context)
         stopWatchSharedPreferences = requireActivity().getSharedPreferences("stopWatchData", Context.MODE_PRIVATE)
@@ -156,8 +155,13 @@ class StopWatchFragmentV2 : Fragment() {
         val loadLapTime = lapTimeWatchSharedPreferences.getString("lapTime", "")
         val lapTimeTypeData = object : TypeToken<ArrayList<LapDataV2>>(){}.type
 
-        if(loadStopWatch != "")
-            stopWatchData = Gson().fromJson(loadStopWatch, stopWatchTypeData)
+
+        // 만약 기존에 저장된 데이터가 없다면 기본값으로 초기화함
+        stopWatchData = if(loadStopWatch != ""){
+            Gson().fromJson(loadStopWatch, stopWatchTypeData)
+        } else {
+            StopWatchTimeData(0, 0, 0, 0)
+        }
 
         if(loadLapTime != ""){
             lapTimeArrayList = Gson().fromJson(loadLapTime, lapTimeTypeData)

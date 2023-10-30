@@ -1,9 +1,11 @@
 package com.example.simplealarm
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.simplealarm.lapTimeRecycler.StopWatchTimeData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.util.Timer
 import javax.inject.Inject
 import kotlin.concurrent.timer
 
@@ -17,29 +19,33 @@ class StopWatchViewModel @Inject constructor() : ViewModel() {
     private var _startState = false
     val startState get() = _startState
 
-    private var _lapState = false
-    val lapState get() = _lapState
+    private var _stopWatchState = false
+    val stopWatchState get() = _stopWatchState
 
     // 스톱워치 데이터 - 만약 SharedPreference 저장된 데이터가 없을경우 초기상태로 사용
     private var stopWatchTime = StopWatchTimeData(0, 0, 0, 0)
 
     // 스톱워치 기능을 수행하는 Timer 객체
-    // lapState Flag 에 따라 시간을 증가시킴
-    private var timerTask = timer(period = 10){
-        if(_lapState){
-            stopWatchTime.milSec++
-            stopWatchTime.calculateTime()
-            _stopWatchData.postValue(stopWatchTime)
-        }
-    }
+    private lateinit var timerTask : Timer
 
     fun setStopWatchData(data : StopWatchTimeData){
         stopWatchTime = data
         _stopWatchData.postValue(data)
     }
 
-    fun changeLapState(state : Boolean){
-        _lapState = state
+    fun changeStopWatchState(state : Boolean){
+        _stopWatchState = state
+
+        // lapState Flag 에 따라 시간을 증가시킴
+        if(_stopWatchState){
+            timerTask = timer(period = 10){
+                stopWatchTime.milSec++
+                stopWatchTime.calculateTime()
+                _stopWatchData.postValue(stopWatchTime)
+            }
+        } else {
+            timerTask.cancel()
+        }
     }
 
     fun changeStartState(state : Boolean){

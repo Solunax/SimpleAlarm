@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -52,6 +53,7 @@ class AlarmViewModel @Inject constructor(application : Application, @LocalReposi
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     fun setAlarm(position: Int, state: Boolean){
         // 알람 데이터 중 현재 선택된 알람의 인스턴스를 가져옴
         alarmData.value?.forEach {
